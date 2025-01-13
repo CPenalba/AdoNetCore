@@ -52,14 +52,27 @@ namespace AdoNetCore
 
         private void btnEliminarEnfermos_Click(object sender, EventArgs e)
         {
-            string sql = "delete from ENFERMO where INSCRIPCION="
-                + this.txtInscripcion.Text;
+            //DEBEMOS INDICAR EL TIPO DE DATOS A ENVIAR COMO PARAMETRO
+            //INSCRIPCION ES UN NUMERO,POR LO QUE DEBEMOS HACER UN CASTING PARA int
+            int inscripcion = int.Parse(this.txtInscripcion.Text);
+            string sql = "delete from ENFERMO where INSCRIPCION=@inscripcion";
+            //CREAMOS EL PARAMETRO PARA LA INSCRIPCION
+            SqlParameter pamInscripcion = new SqlParameter("@inscripcion", inscripcion);
+            //VALUE DEBE SER DEL MISMO TIPO QUE EL PARAMETRO (int)
+            //pamInscripcion.Value = inscripcion;
+            //pamInscripcion.DbType = DbType.Int32;
+            //DIRECTION INDICA SI EL PARAMETRO ES ENTRADA O SALIDA
+            //POR DEFECTO, ES input
+            //pamInscripcion.Direction = ParameterDirection.Input;
+            //AÑADIMOS EL PARAMETRO AL COMMAND
+            this.com.Parameters.Add(pamInscripcion);
             this.com.Connection = this.cn;
             this.com.CommandType = CommandType.Text;
             this.com.CommandText = sql;
             this.cn.Open();
             int eliminados = this.com.ExecuteNonQuery();
             this.cn.Close();
+            this.com.Parameters.Clear();
             this.CargarEnfermos();
             MessageBox.Show("Enfermos eliminados " + eliminados);
         }
