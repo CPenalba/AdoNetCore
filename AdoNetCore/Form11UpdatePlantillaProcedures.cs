@@ -10,32 +10,27 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 #region STORED PROCEDURES
-//create procedure SP_ALL_HOSPITALES
+//create procedure SP_ALL_HOSPITALESS
 //as
-//select *  from HOSPITAL
+//	select * from HOSPITAL
 //go
-//create procedure SP_UPDATEPLANTILLA_HOSPITAL
-//(@nombre nvarchar(50), @incremento int)
-//as
-//declare @hospitalcod int
-//select @hospitalcod = HOSPITAL_COD from HOSPITAL
-//where NOMBRE=@nombre
-//update PLANTILLA set SALARIO=SALARIO + @incremento
-//where HOSPITAL_COD=@hospitalcod
-//select * from PLANTILLA
-//where HOSPITAL_COD=@hospitalcod
-
-//go
-//create procedure SP_PLANTILLAHOSPITALES
+//create procedure SP_GETPLANTILLA_HOSPITALL
 //(@nombre nvarchar(50))
 //as
-//DECLARE @hospitalcod INT;
-//    SELECT @hospitalcod = HOSPITAL_COD
-//    FROM HOSPITAL
-//    WHERE NOMBRE = @nombre;
-//    SELECT *
-//    FROM PLANTILLA
-//    WHERE HOSPITAL_COD = @hospitalcod;
+//	declare @hospitalcod int
+//	select @hospitalcod = HOSPITAL_COD from HOSPITAL
+//	where NOMBRE=@nombre
+//	select * from PLANTILLA 
+//	where HOSPITAL_COD=@hospitalcod
+//go
+//alter procedure SP_UPDATEPLANTILLA_HOSPITAL
+//(@nombre nvarchar(50), @incremento int)
+//as
+//	declare @hospitalcod int
+//	select @hospitalcod = HOSPITAL_COD from HOSPITAL
+//	where NOMBRE=@nombre
+//	update PLANTILLA set SALARIO=SALARIO + @incremento
+//	where HOSPITAL_COD=@hospitalcod
 //go
 #endregion
 
@@ -58,7 +53,7 @@ namespace AdoNetCore
 
         public async void LoadHospitales()
         {
-            string sql = "SP_ALL_HOSPITALES";
+            string sql = "SP_ALL_HOSPITALESS";
             this.com.CommandType = CommandType.StoredProcedure;
             this.com.CommandText = sql;
             await this.cn.OpenAsync();
@@ -83,6 +78,20 @@ namespace AdoNetCore
             this.com.CommandType = CommandType.StoredProcedure;
             this.com.CommandText = sql;
             await this.cn.OpenAsync();
+            int afectados = await this.com.ExecuteNonQueryAsync();
+            await this.cn.CloseAsync();
+            this.com.Parameters.Clear();
+            await this.LoadPlantilla(nombre);
+            MessageBox.Show("Registros modificados: " + afectados);
+        }
+
+        public async Task LoadPlantilla(string nombre)
+        {
+            string sql = "SP_GETPLANTILLA_HOSPITALL";
+            this.com.Parameters.AddWithValue("@nombre", nombre);
+            this.com.CommandType = CommandType.StoredProcedure;
+            this.com.CommandText = sql;
+            await this.cn.OpenAsync();
             this.reader = await this.com.ExecuteReaderAsync();
             this.lstPlantilla.Items.Clear();
             while (await this.reader.ReadAsync())
@@ -98,22 +107,11 @@ namespace AdoNetCore
 
         private async void cmbHospitales_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string nombre = this.cmbHospitales.SelectedItem.ToString();
-            string sql = "SP_PLANTILLAHOSPITALES";
-            this.com.Parameters.AddWithValue("@nombre", nombre);
-            this.com.CommandType = CommandType.StoredProcedure;
-            this.com.CommandText = sql;
-            await this.cn.OpenAsync();
-            this.reader = await this.com.ExecuteReaderAsync();
-            this.lstPlantilla.Items.Clear();
-            while (await this.reader.ReadAsync())
+            if (this.cmbHospitales.SelectedIndex != -1)
             {
-                string apellido = this.reader["APELLIDO"].ToString();
-                this.lstPlantilla.Items.Add(apellido);
+                string nombre = this.cmbHospitales.SelectedItem.ToString();
+                await this.LoadPlantilla(nombre);
             }
-            await this.reader.CloseAsync();
-            await this.cn.CloseAsync();
-            this.com.Parameters.Clear();
         }
     }
 }
