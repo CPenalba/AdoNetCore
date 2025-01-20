@@ -91,7 +91,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(420, 40);
+            label4.Location = new Point(345, 40);
             label4.Name = "label4";
             label4.Size = new Size(112, 20);
             label4.TabIndex = 6;
@@ -105,15 +105,16 @@
             btnInsertar.TabIndex = 7;
             btnInsertar.Text = "Insertar";
             btnInsertar.UseVisualStyleBackColor = true;
+            btnInsertar.Click += btnInsertar_Click;
             // 
             // lstDepartamentos
             // 
             lstDepartamentos.FormattingEnabled = true;
-            lstDepartamentos.Location = new Point(420, 63);
+            lstDepartamentos.Location = new Point(345, 63);
             lstDepartamentos.Name = "lstDepartamentos";
-            lstDepartamentos.Size = new Size(338, 304);
+            lstDepartamentos.Size = new Size(432, 304);
             lstDepartamentos.TabIndex = 8;
-            lstDepartamentos.SelectedIndexChanged += listBox1_SelectedIndexChanged;
+            lstDepartamentos.SelectedIndexChanged += lstDepartamentos_SelectedIndexChanged;
             // 
             // lblMensaje
             // 
