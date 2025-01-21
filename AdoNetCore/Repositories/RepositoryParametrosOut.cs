@@ -1,4 +1,5 @@
-﻿using AdoNetCore.Models;
+﻿using AdoNetCore.Helpers;
+using AdoNetCore.Models;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace AdoNetCore.Repositories
 
         public RepositoryParametrosOut()
         {
-            string connectionString = @"Data Source=LOCALHOST\SQLEXPRESS;Initial Catalog=HOSPITAL;Persist Security Info=True;User ID=SA; Trust Server Certificate=True";
+            string connectionString = HelperConfiguration.GetConnectionString();
             this.cn = new SqlConnection(connectionString);
             this.com = new SqlCommand();
             this.com.Connection = this.cn;
